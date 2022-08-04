@@ -38,7 +38,10 @@ class Database {
         return this.sequelize
             .authenticate()
             .then(() => __awaiter(this, void 0, void 0, function* () {
-            yield this.sequelize.sync({ force: true });
+            const argv = process.argv.slice(2);
+            if (argv.length && argv[0] === '--migrate') {
+                yield this.sequelize.sync({ force: true });
+            }
             console.info(`Successfully connected to database ${configs_1.default.DATABASE.database}`);
             return;
         }))
