@@ -1,34 +1,33 @@
 {
-  "root": true,
+  "env": {
+    "browser": false,
+    "node": true,
+    "es6": true
+  },
+  "extends": ["google", "plugin:prettier/recommended"],
   "parser": "@typescript-eslint/parser",
-  "parserOptions": { "project": "./tsconfig.json" },
-  "env": { "es6": true },
-  "ignorePatterns": ["node_modules", "build", "coverage"],
-  "plugins": ["import", "eslint-comments", "functional"],
-  "extends": [
-    "eslint:recommended",
-    "plugin:eslint-comments/recommended",
-    "plugin:@typescript-eslint/recommended",
-    "plugin:import/typescript",
-    "plugin:functional/lite",
-    "prettier",
-    "prettier/@typescript-eslint"
-  ],
-  "globals": { "BigInt": true, "console": true, "WebAssembly": true },
+  "parserOptions": {
+    "ecmaVersion": 11,
+    "sourceType": "module",
+    "tsconfigRootDir": "./",
+    "project": ["./tsconfig.json", "./src/**/*.ts"]
+  },
+  "plugins": ["@typescript-eslint"],
   "rules": {
-    "@typescript-eslint/explicit-module-boundary-types": "off",
-    "eslint-comments/disable-enable-pair": [
+    "no-console": ["warn"],
+    "no-shadow": "off",
+    "quotes": [2, "single", "avoid-escape"],
+    "rest-spread-spacing": ["error", "never"],
+    "prettier/prettier": [
       "error",
-      { "allowWholeFile": true }
+      {
+        "quoteProps": "consistent",
+        "doubleQuote": true,
+        "trailingComma": "all",
+        "bracketSpacing": true
+      }
     ],
-    "eslint-comments/no-unused-disable": "error",
-    "import/order": [
-      "error",
-      { "newlines-between": "always", "alphabetize": { "order": "asc" } }
-    ],
-    "sort-imports": [
-      "error",
-      { "ignoreDeclarationSort": true, "ignoreCase": true }
-    ]
+    "newline-before-return": "error",
+    "require-jsdoc": 0
   }
 }
