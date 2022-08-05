@@ -9,7 +9,7 @@ import { DocumentVisibility } from '../enum/document_visibility.enum';
 export const createDocument = async (
   name: string,
   email: string,
-  visibility: DocumentVisibility = DocumentVisibility.Private
+  visibility: DocumentVisibility
 ) => {
   try {
     const path = uuid.generate();

@@ -1,4 +1,4 @@
-import { DocumentVisibility } from 'enum/document_visibility.enum';
+import { DocumentVisibility } from '../enum/document_visibility.enum';
 import { Request, Response } from 'express';
 import {
   createDocument,
@@ -12,7 +12,7 @@ import {
 export const createDocumentController = async (req: Request, res: Response) => {
   try {
     const name = req.body.name;
-    const visibility = req.body.visibility.toUpperCase() as DocumentVisibility;
+    const visibility = req.body.visibility || DocumentVisibility.Private;
     const email = req.headers.email as string;
     const response = await createDocument(name, email, visibility);
     res.send(response);
