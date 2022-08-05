@@ -40,9 +40,9 @@ export const fetchDocument = async (requesterEmail: string, id: number) => {
     }
     if (
       response?.visibility === DocumentVisibility.Public ||
+      response?.owners.includes(requesterEmail) ||
       response?.readUsers.includes(requesterEmail) ||
-      response?.writeUsers.includes(requesterEmail) ||
-      response?.owners.includes(requesterEmail)
+      response?.writeUsers.includes(requesterEmail)
     ) {
       return response;
     } else throw 'User is not allowed to access this document.';
