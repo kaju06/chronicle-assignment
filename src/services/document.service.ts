@@ -114,41 +114,47 @@ export const giveDocumentAccess = async (data: {
       throw 'No such document exists!';
     }
     if (
-      response?.writeUsers.includes(requesterEmail) ||
-      response?.owners.includes(requesterEmail)
+      response.writeUsers?.includes(requesterEmail) ||
+      response.owners?.includes(requesterEmail)
     ) {
       let updateData = {};
       access.forEach((i) => {
         switch (i) {
           case DocumentAccessEnum.Read:
-            updateData = {
-              ...updateData,
-              readUsers: Sequelize.fn(
-                'array_append',
-                Sequelize.col('read_users'),
-                email
-              ),
-            };
+            if (!response.readUsers || !response.readUsers.includes(email)) {
+              updateData = {
+                ...updateData,
+                readUsers: Sequelize.fn(
+                  'array_append',
+                  Sequelize.col('read_users'),
+                  email
+                ),
+              };
+            }
             break;
           case DocumentAccessEnum.Write:
-            updateData = {
-              ...updateData,
-              writeUsers: Sequelize.fn(
-                'array_append',
-                Sequelize.col('write_users'),
-                email
-              ),
-            };
+            if (!response.writeUsers || !response.writeUsers.includes(email)) {
+              updateData = {
+                ...updateData,
+                writeUsers: Sequelize.fn(
+                  'array_append',
+                  Sequelize.col('write_users'),
+                  email
+                ),
+              };
+            }
             break;
           case DocumentAccessEnum.Owner:
-            updateData = {
-              ...updateData,
-              owners: Sequelize.fn(
-                'array_append',
-                Sequelize.col('owners'),
-                email
-              ),
-            };
+            if (!response.owners || !response.owners.includes(email)) {
+              updateData = {
+                ...updateData,
+                owners: Sequelize.fn(
+                  'array_append',
+                  Sequelize.col('owners'),
+                  email
+                ),
+              };
+            }
             break;
           default:
             null;
@@ -175,16 +181,17 @@ export const editDocumentAccess = async (data: {
     const { docId, email, addAccess, removeAccess, requesterEmail } = data;
     const response = await DocumentModel.findOne({
       where: { id: docId, isDeleted: false },
+      raw: true,
     });
     if (!response) {
       throw 'No such document exists!';
     }
-    if (response?.owners.includes(requesterEmail)) {
+    if (response.owners?.includes(requesterEmail)) {
       let updateData = {};
-      removeAccess?.length &&
-        removeAccess?.forEach((i) => {
-          switch (i) {
-            case DocumentAccessEnum.Read:
+      removeAccess?.forEach((i) => {
+        switch (i) {
+          case DocumentAccessEnum.Read:
+            if (response.readUsers?.includes(email)) {
               updateData = {
                 ...updateData,
                 readUsers: Sequelize.fn(
@@ -193,8 +200,10 @@ export const editDocumentAccess = async (data: {
                   email
                 ),
               };
-              break;
-            case DocumentAccessEnum.Write:
+            }
+            break;
+          case DocumentAccessEnum.Write:
+            if (response.writeUsers?.includes(email)) {
               updateData = {
                 ...updateData,
                 writeUsers: Sequelize.fn(
@@ -203,8 +212,10 @@ export const editDocumentAccess = async (data: {
                   email
                 ),
               };
-              break;
-            case DocumentAccessEnum.Owner:
+            }
+            break;
+          case DocumentAccessEnum.Owner:
+            if (response.owners?.includes(email)) {
               updateData = {
                 ...updateData,
                 owners: Sequelize.fn(
@@ -213,15 +224,16 @@ export const editDocumentAccess = async (data: {
                   email
                 ),
               };
-              break;
-            default:
-              null;
-          }
-        });
-      addAccess?.length &&
-        addAccess?.forEach((i) => {
-          switch (i) {
-            case DocumentAccessEnum.Read:
+            }
+            break;
+          default:
+            null;
+        }
+      });
+      addAccess?.forEach((i) => {
+        switch (i) {
+          case DocumentAccessEnum.Read:
+            if (!response.readUsers || !response.readUsers.includes(email)) {
               updateData = {
                 ...updateData,
                 readUsers: Sequelize.fn(
@@ -230,8 +242,10 @@ export const editDocumentAccess = async (data: {
                   email
                 ),
               };
-              break;
-            case DocumentAccessEnum.Write:
+            }
+            break;
+          case DocumentAccessEnum.Write:
+            if (!response.writeUsers || !response.writeUsers.includes(email)) {
               updateData = {
                 ...updateData,
                 writeUsers: Sequelize.fn(
@@ -240,8 +254,10 @@ export const editDocumentAccess = async (data: {
                   email
                 ),
               };
-              break;
-            case DocumentAccessEnum.Owner:
+            }
+            break;
+          case DocumentAccessEnum.Owner:
+            if (!response.owners || !response.owners.includes(email)) {
               updateData = {
                 ...updateData,
                 owners: Sequelize.fn(
@@ -250,11 +266,12 @@ export const editDocumentAccess = async (data: {
                   email
                 ),
               };
-              break;
-            default:
-              null;
-          }
-        });
+            }
+            break;
+          default:
+            null;
+        }
+      });
       await DocumentModel.update(updateData, { where: { id: docId } });
       return {
         message: 'Requested access has been updated on the document.',
