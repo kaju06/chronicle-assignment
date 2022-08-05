@@ -1,21 +1,9 @@
 import Configs from '../constants/configs';
 import { SequelizeOptions, Sequelize } from 'sequelize-typescript';
 
-/**
- * @description Manages database connection
- * @export
- * @class Database
- */
 export class Database {
   private static sequelize: Sequelize;
 
-  /**
-   * @description Connects application to Database
-   * @static
-   * @param {SequelizeOptions} [connectionOptions]
-   * @return {*}
-   * @memberof Database
-   */
   public static connect(connectionOptions?: SequelizeOptions) {
     if (connectionOptions) {
       this.sequelize = new Sequelize(connectionOptions);

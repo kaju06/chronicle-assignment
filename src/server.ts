@@ -4,7 +4,6 @@ import express from 'express';
 
 const bootServer = (port?: string): any => {
   const SERVER_PORT = port || Configs.PORT as string;
-  console.debug('Bootstrapping auth service application');
 
   const app = new App(SERVER_PORT, express());
 
@@ -12,7 +11,7 @@ const bootServer = (port?: string): any => {
     console.info('Got SIGTERM signal.');
     console.info('Proceeding with graceful shutdown.');
 
-    const READINESS_PROBE_DELAY = 10000; // 10s
+    const READINESS_PROBE_DELAY = 10000;
 
     setTimeout(app.gracefulShutdown.bind(app), READINESS_PROBE_DELAY);
   });
